@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ExaminationManagementSystem
@@ -150,31 +151,60 @@ namespace ExaminationManagementSystem
         private void PrintQuestions<T>(string title, List<T> questions)
             where T : Question
         {
-            Console.WriteLine($"\n{title}");
+            Console.WriteLine();
+            Console.WriteLine("======================================");
+            Console.WriteLine($" {title.ToUpper()} ");
+            Console.WriteLine("======================================");
+
+            if (questions.Count == 0)
+            {
+                Console.WriteLine("No questions available.");
+                return;
+            }
+
+            int counter = 1;
+
             foreach (var q in questions)
             {
-                Console.WriteLine(q.QuestionText);
-                Console.WriteLine(q.Level);
-                Console.WriteLine(q.Mark);
-                Console.WriteLine(q.CorrectAnswer);
+                Console.WriteLine($"Q{counter}) {q.QuestionText}");
+                Console.WriteLine($"   Level : {q.Level}");
+                Console.WriteLine($"   Mark  : {q.Mark}");
+                Console.WriteLine($"   Answer: {q.CorrectAnswer}");
+                Console.WriteLine("--------------------------------------");
+                counter++;
             }
         }
 
+
         private void PrintChoiceQuestions()
         {
-            Console.WriteLine("\nChoices Questions");
+            Console.WriteLine("\n=== Choices Questions ===");
+
+            if (_dbContext.ChoicesQuestions.Count == 0)
+            {
+                Console.WriteLine("No choice questions available.");
+                return;
+            }
+
+            int counter = 1; 
+
             foreach (var q in _dbContext.ChoicesQuestions)
             {
-                Console.WriteLine(q.QuestionText);
-                Console.WriteLine(q.Mark);
-                Console.WriteLine(q.Level);
-                Console.WriteLine("Choices:");
-                Console.WriteLine(q.FirstChoice);
-                Console.WriteLine(q.SecondChoice);
-                Console.WriteLine(q.ThirdChoice);
-                Console.WriteLine(q.FourthChoice);
+                Console.WriteLine($"Q{counter}) {q.QuestionText}");
+                Console.WriteLine($"   Level : {q.Level}");
+                Console.WriteLine($"   Mark  : {q.Mark}");
+                Console.WriteLine($"   Answer: {q.CorrectAnswer}");
+                Console.WriteLine("   Choices:");
+                Console.WriteLine($"   1) {q.FirstChoice}");
+                Console.WriteLine($"   2) {q.SecondChoice}");
+                Console.WriteLine($"   3) {q.ThirdChoice}");
+                Console.WriteLine($"   4) {q.FourthChoice}");
+                Console.WriteLine("--------------------------------------");
+
+                counter++; // نزود العداد
             }
         }
-  
+
+
     }
 }

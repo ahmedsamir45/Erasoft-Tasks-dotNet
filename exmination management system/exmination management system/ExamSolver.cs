@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.IO;
 namespace ExaminationManagementSystem
 {
     public class ExamSolver
@@ -7,17 +7,29 @@ namespace ExaminationManagementSystem
         private DBContext _dbContext = DBContext.Instance;
         public int StudentTotal { get; set; } = 0;
         public int ExamTotal { get; set; } = 0;
+        public string StudentName { get; set; } = "";
+        public string FileName { get; set; } = "ExamResult";
+        private static bool IsFirstExport = true;
+
+
         public void SolveExam()
         {
             Console.WriteLine("\n--- Solving Exam ---");
-
+            IntialName();
             SolveWritingQuestions();
             SolveTrueOrFalseQuestions();
             SolveChoicesQuestions();
             CalculateTotalScore();
             PrintingScore();
-        }
 
+            ExportToTextFile($"{this.FileName}.txt");
+            ResetProp();
+        }
+        private void IntialName()
+        {
+            Console.WriteLine("Enter your name: ");
+            this.StudentName = Console.ReadLine();
+        }
         private void SolveWritingQuestions()
         {
             foreach (var q in _dbContext.WritingQuestions)
@@ -90,5 +102,52 @@ namespace ExaminationManagementSystem
         {
             Console.WriteLine($"your score is {this.StudentTotal} / {this.ExamTotal}");
         }
+
+
+        private void ExportToTextFile(string filePath)
+        {
+         
+            bool appendMode = !IsFirstExport;
+
+            using (StreamWriter writer = new StreamWriter(filePath, appendMode))
+            {
+                writer.WriteLine("================================");
+                writer.WriteLine($"Student Result - {DateTime.Now}");
+                writer.WriteLine($"Student Name - {this.StudentName}");
+                writer.WriteLine("================================");
+
+                foreach (var q in _dbContext.WritingQuestions)
+                    WriteQuestion(writer, q);
+
+                foreach (var q in _dbContext.TrueOrFalseQuestions)
+                    WriteQuestion(writer, q);
+
+                foreach (var q in _dbContext.ChoicesQuestions)
+                    WriteQuestion(writer, q);
+
+                writer.WriteLine($"Total: {StudentTotal} / {ExamTotal}");
+                writer.WriteLine("\n\n");
+            }
+
+            
+            IsFirstExport = false;
+        }
+
+
+
+        private void WriteQuestion(StreamWriter writer, Question q)
+    {
+        writer.WriteLine($"Question: {q.QuestionText}");
+        writer.WriteLine($"Student Answer: {q.StudentAnswer}");
+        writer.WriteLine($"Correct Answer: {q.CorrectAnswer}");
+        writer.WriteLine($"Mark: {q.StudentDegree} / {q.Mark}");
+        writer.WriteLine();
     }
+        private void ResetProp()
+        {
+            this.StudentTotal = 0;
+            this.ExamTotal = 0;
+            this.StudentName = "";
+        }
+}
 }

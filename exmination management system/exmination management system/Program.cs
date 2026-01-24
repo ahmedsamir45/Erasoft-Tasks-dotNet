@@ -26,12 +26,17 @@ namespace ExaminationManagementSystem
                         exam.IntializeExam();
                         exam.CreateQuestions();
                         exam.ShowQuestions();
+                        Console.WriteLine("Enter the file Name of exporting exam reasults:");
+                        string filename = Console.ReadLine();
+                        examSolver.FileName = filename;
                         break;
 
                     case "2":
                         Console.WriteLine("\n--- Student Mode ---");
                         examSolver.SolveExam();
                         
+
+
                         break;
 
                     case "q":
